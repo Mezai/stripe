@@ -99,6 +99,14 @@ class Stripe extends PaymentModule
 
 	}
 
+	public function paymentReturn()
+	{
+		if (!$this->active)
+			return;
+
+		return $this->display(__FILE__, 'payment-return.tpl');
+	}
+
 	public function postProcess()
 	{
 		if (Tools::isSubmit('saveBtn'))
