@@ -45,7 +45,7 @@ class StripeChargeModuleFrontController extends ModuleFrontController
 		  $body = $e->getJsonBody();
 		  $err  = $body['error'];
 
-		  //Logger::addLog('Stripe module: declined transaction. Message :'. $err['message'] .'Param:'. $err['param'] .'Code:'. $err['code'] .'Type:'. $err['type'] .'Status:'. $e->getHttpStatus());
+		  Logger::addLog('Stripe module: declined transaction. Message :'. $err['message'] .'Param:'. $err['param'] .'Code:'. $err['code'] .'Type:'. $err['type'] .'Status:'. $e->getHttpStatus());
 		  Tools::redirect($error_page);
 
 		} catch (\Stripe\Error\RateLimit $e) {
@@ -57,7 +57,7 @@ class StripeChargeModuleFrontController extends ModuleFrontController
 			Tools::redirect($error_page);
 
 		} catch (\Stripe\Error\Authentication $e) {
-		  	Logger::addLog('Stripe module: autentication failure check qpi credentials. Response message:'.$e->getMessage());
+		  	Logger::addLog('Stripe module: autentication failure check api credentials. Response message:'.$e->getMessage());
 		  	Tools::redirect($error_page);
 
 		} catch (\Stripe\Error\ApiConnection $e) {

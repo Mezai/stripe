@@ -71,35 +71,54 @@ class Stripe extends PaymentModule
 
 	public function uninstall()
 	{
-		return parent::uninstall();
+		return parent::uninstall()
+		&& Configuration::deleteByName('STRIPE_SECRET_KEY')
+		&& Configuration::deleteByName('STRIPE_PUBLISHABLE_KEY')
+		&& Configuration::deleteByName('STRIPE_MODE');
+	}
+
+	public function hookHeader()
+	{
+		$this->context->controller->addJS("https://checkout.stripe.com/checkout.js");
 	}
 
 	
-	public function hookPayment()
+	public function hookPayment($params)
 	{
 		if (!$this->active)
 			return;
 		
 		$cart = $this->context->cart;
+		$currency = new Currency((int)$cart->id_currency);
+
 
 		 $stripe = array(
 		 	'secret_key' => (String)Configuration::get('STRIPE_SECRET_KEY'),
 		 	'publishable_key' => (String)Configuration::get('STRIPE_PUBLISHABLE_KEY')
 		 	);
 
-		\Stripe\Stripe::setApiKey((String)Configuration::get('STRIPE_SECRET_KEY'));		 
+		\Stripe\Stripe::setApiKey((String)Configuration::get('STRIPE_SECRET_KEY'));
+
+		$desc = '';
+		foreach ($cart->getProducts() as $product) {
+			$desc .= $product['name'];		 
+		}		 
 		
+
 		 $this->context->smarty->assign(array(
-		 	'stripe_key' => $stripe['publishable_key'],
-		 	'currency' => Tools::strtolower($this->context->currency->iso_code),
-		 	'total_amount' => (int)($cart->getOrderTotal(true, CART::BOTH) * 100)
+		 	'stripe_pk_key' => $stripe['publishable_key'],
+		 	'shop_name' => $this->context->shop->name,
+		 	'stripe_currency' => Tools::strtolower($currency->iso_code),
+		 	'stripe_desc' => $desc,
+		 	'total_amount' => (int)($cart->getOrderTotal(true, CART::BOTH) * 100),
+		 	'this_path_img' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/views/img/'
 		 	));
 
 		 return $this->display(__FILE__, 'payment.tpl');
 
 	}
 
-	public function paymentReturn()
+	public function hookPaymentReturn($params)
 	{
 		if (!$this->active)
 			return;
