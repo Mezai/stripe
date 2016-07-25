@@ -15,9 +15,9 @@ class StripeInstall extends Stripe
     {
         if (!Db::getInstance()->Execute('
 			CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'stripe_orders` (
-				`id_order` int(10) unsigned NOT NULL,
+				`id_stripe_order` int(10) unsigned NOT NULL,
 				`id_transaction` varchar(255) NOT NULL,
-				PRIMARY KEY(`id_order`)
+				PRIMARY KEY(`id_stripe_order`)
 				) ENGINE ='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8')) {
             return false;
         }

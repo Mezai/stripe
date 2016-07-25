@@ -43,7 +43,6 @@ class StripeAdminOrderController extends ModuleAdminController
                     'required' => false,
                     'col' => 4,
                     'hint' => $this->l('Stripe transaction id'),
-
                 ),
             ),
         );
