@@ -1,7 +1,6 @@
 <?php
 use Stripe\Stripe;
 use Stripe\Refund;
-require_once dirname(__FILE__).'/../../vendor/autoload.php';
 class StripeAdminOrderController extends ModuleAdminController
 {
     public function __construct()
@@ -9,6 +8,7 @@ class StripeAdminOrderController extends ModuleAdminController
         $this->bootstrap = true;
         $this->table = 'stripe_orders';
         $this->lang = false;
+        $this->identifier = 'id_stripe_order';
         $this->list_no_link = true;
         $this->_default_pagination = 10;
         $this->_pagination = array(10,50,100,300,1000);
@@ -17,7 +17,7 @@ class StripeAdminOrderController extends ModuleAdminController
             'id_stripe_order' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
             'id_transaction' => array('title' => $this->l('Transaction Id')),
         );
-       Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
+        parent::__construct();
     }
     public function renderForm()
     {
@@ -56,6 +56,8 @@ class StripeAdminOrderController extends ModuleAdminController
         try {
             if (Tools::isSubmit('credit_stripe'))
             {
+                Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
+                
                 Refund::create(
                     array(
                         'charge' => Tools::getValue('stripe_refund_transaction')
