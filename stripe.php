@@ -59,14 +59,13 @@ class Stripe extends PaymentModule
 
 		$stripe_install = new StripeInstall();
 
-		$stripe_install->createTables();
-
 		return parent::install()
 		&& $this->registerHook('payment')
 		&& $this->registerHook('paymentReturn')
 		&& $this->registerHook('header')
-		&& $this->registerHook('backOfficeHeader');
-
+                && $this->registerHook('backOfficeHeader')
+                && $stripe_install->addTabs()
+                && $stripe_install->createTables();
 	}
 
 	public function uninstall()
