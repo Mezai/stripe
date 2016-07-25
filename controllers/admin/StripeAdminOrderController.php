@@ -1,8 +1,7 @@
 <?php
-
-use Stripe\Refund;
 use Stripe\Stripe;
-
+use Stripe\Refund;
+require_once dirname(__FILE__).'/../../vendor/autoload.php';
 class StripeAdminOrderController extends ModuleAdminController
 {
     public function __construct()
@@ -18,7 +17,7 @@ class StripeAdminOrderController extends ModuleAdminController
             'id_stripe_order' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
             'id_transaction' => array('title' => $this->l('Transaction Id')),
         );
-        Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
+       Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
     }
     public function renderForm()
     {
