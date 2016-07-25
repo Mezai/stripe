@@ -23,7 +23,7 @@ tools/smarty*/compile/*.php
 
 themes/default/cache/*.js
 themes/default/cache/*.css
-
+tags
 # Ignore files on root directory
 robots.txt
 sitemap.xml

@@ -1,5 +1,13 @@
 <?php
 
+use Stripe\Stripe;
+use Stripe\Error\Card;
+use Stripe\Error\RateLimit;
+use Stripe\Error\InvalidRequest;
+use Stripe\Error\Authentication;
+use Stripe\Error\ApiConnection;
+use Stripe\Error\Base;
+
 
 class StripeChargeModuleFrontController extends ModuleFrontController
 {
@@ -14,16 +22,16 @@ class StripeChargeModuleFrontController extends ModuleFrontController
 
 		try {	
 			
-			\Stripe\Stripe::setApiKey((String)Configuration::get('STRIPE_SECRET_KEY'));
+			Stripe::setApiKey((String)Configuration::get('STRIPE_SECRET_KEY'));
 			
 			$token = Tools::getValue('stripeToken');
 
-			$customer = \Stripe\Customer::create(array(
+			$customer = Customer::create(array(
 				'email' => $customer->email,
 				'card'  => $token
 	  		));
 
-			$charge =  \Stripe\Charge::create(array(
+			$charge = Charge::create(array(
 				'customer' => $customer->id,
 				'amount'   => (int)($cart->getOrderTotal(true, CART::BOTH) * 100),
 				'currency' => 'sek'
@@ -40,7 +48,7 @@ class StripeChargeModuleFrontController extends ModuleFrontController
 						$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
 
 
-		} catch(\Stripe\Error\Card $e) {
+		} catch(Card $e) {
 
 		  $body = $e->getJsonBody();
 		  $err  = $body['error'];
@@ -48,23 +56,23 @@ class StripeChargeModuleFrontController extends ModuleFrontController
 		  Logger::addLog('Stripe module: declined transaction. Message :'. $err['message'] .'Param:'. $err['param'] .'Code:'. $err['code'] .'Type:'. $err['type'] .'Status:'. $e->getHttpStatus());
 		  Tools::redirect($error_page);
 
-		} catch (\Stripe\Error\RateLimit $e) {
+		} catch (RateLimit $e) {
 			Logger::addLog('Stripe module: too many requests executed response message :'.$e->getMessage());
 			Tools::redirect($error_page);
 
-		} catch (\Stripe\Error\InvalidRequest $e) {
+		} catch (InvalidRequest $e) {
 			Logger::addLog('Stripe module: invalid Api request response message'.$e->getMessage());
 			Tools::redirect($error_page);
 
-		} catch (\Stripe\Error\Authentication $e) {
+		} catch (Authentication $e) {
 		  	Logger::addLog('Stripe module: autentication failure check api credentials. Response message:'.$e->getMessage());
 		  	Tools::redirect($error_page);
 
-		} catch (\Stripe\Error\ApiConnection $e) {
+		} catch (ApiConnection $e) {
 			Logger::addLog('Stripe module: network communication failed response message:'.$e->getMessage());
 			Tools::redirect($error_page);
 
-		} catch (\Stripe\Error\Base $e) {
+		} catch (Base $e) {
 		  	Logger::addLog('Stripe module: error in payment message :'.$e->getMessage());
 			Tools::redirect($error_page);
 

@@ -84,6 +84,7 @@ SingletonApiResource	.\vendor\stripe\stripe-php\lib\SingletonApiResource.php	/^a
 SkuID	.\vendor\stripe\stripe-php\tests\ProductTest.php	/^        $SkuID = 'silver-sku-' . self::generateRandomString(20);$/;"	v
 Stripe	.\stripe.php	/^class Stripe extends PaymentModule$/;"	c
 Stripe	.\vendor\stripe\stripe-php\lib\Stripe.php	/^class Stripe$/;"	c
+StripeAdminOrderController	.\controllers\admin\StripeAdminOrderController.php	/^class StripeAdminOrderController extends ModuleAdminController$/;"	c
 StripeChargeModuleFrontController	.\controllers\front\charge.php	/^class StripeChargeModuleFrontController extends ModuleFrontController$/;"	c
 StripeErrorModuleFrontController	.\controllers\front\error.php	/^class StripeErrorModuleFrontController extends ModuleFrontController$/;"	c
 StripeInstall	.\stripe_install.php	/^class StripeInstall extends Stripe$/;"	c
@@ -102,6 +103,7 @@ URL	.\vendor\stripe\stripe-php\lib\BalanceTransaction.php	/^     * @return strin
 URL	.\vendor\stripe\stripe-php\lib\BitcoinReceiver.php	/^     * @return string The class URL for this resource. It needs to be special$/;"	c
 Util	.\vendor\stripe\stripe-php\lib\Util\Util.php	/^abstract class Util$/;"	c
 UtilTest	.\vendor\stripe\stripe-php\tests\UtilTest.php	/^class UtilTest extends TestCase$/;"	c
+__construct	.\controllers\admin\StripeAdminOrderController.php	/^    public function __construct()$/;"	f
 __construct	.\stripe.php	/^	public function __construct()$/;"	f
 __construct	.\stripe_install.php	/^    public function __construct()$/;"	f
 __construct	.\vendor\stripe\stripe-php\lib\ApiRequestor.php	/^    public function __construct($apiKey = null, $apiBase = null)$/;"	f
@@ -126,6 +128,7 @@ _apiBase	.\vendor\stripe\stripe-php\lib\ApiRequestor.php	/^    private $_apiBase
 _apiKey	.\vendor\stripe\stripe-php\lib\ApiRequestor.php	/^        $this->_apiKey = $apiKey;$/;"	v
 _apiKey	.\vendor\stripe\stripe-php\lib\ApiRequestor.php	/^    private $_apiKey;$/;"	v
 _create	.\vendor\stripe\stripe-php\lib\ApiResource.php	/^    protected static function _create($params = null, $options = null)$/;"	f
+_default_pagination	.\controllers\admin\StripeAdminOrderController.php	/^        $this->_default_pagination = 10;$/;"	v
 _delete	.\vendor\stripe\stripe-php\lib\ApiResource.php	/^    protected function _delete($params = null, $options = null)$/;"	f
 _elts	.\vendor\stripe\stripe-php\lib\Util\Set.php	/^        $this->_elts = array();$/;"	v
 _elts	.\vendor\stripe\stripe-php\lib\Util\Set.php	/^    private $_elts;$/;"	v
@@ -137,6 +140,7 @@ _lastResponse	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^    protected $_
 _opts	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^        $this->_opts = $opts ? $opts : new Util\\RequestOptions();$/;"	v
 _opts	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^        $this->_opts = $opts;$/;"	v
 _opts	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^    protected $_opts;$/;"	v
+_pagination	.\controllers\admin\StripeAdminOrderController.php	/^        $this->_pagination = array(10,50,100,300,1000);$/;"	v
 _processResourceParam	.\vendor\stripe\stripe-php\lib\ApiRequestor.php	/^    private function _processResourceParam($resource, $hasCurlFile)$/;"	f
 _request	.\vendor\stripe\stripe-php\lib\ApiResource.php	/^    protected function _request($method, $url, $params = array(), $options = null)$/;"	f
 _requestRaw	.\vendor\stripe\stripe-php\lib\ApiRequestor.php	/^    private function _requestRaw($method, $url, $params, $headers)$/;"	f
@@ -171,7 +175,7 @@ add	.\vendor\stripe\stripe-php\lib\Util\Set.php	/^    public function add($elt)$
 addClassMap	.\vendor\composer\ClassLoader.php	/^    public function addClassMap(array $classMap)$/;"	f
 addInvoiceItem	.\vendor\stripe\stripe-php\lib\Customer.php	/^    public function addInvoiceItem($params = null)$/;"	f
 addPsr4	.\vendor\composer\ClassLoader.php	/^    public function addPsr4($prefix, $paths, $prepend = false)$/;"	f
-addTabs	.\stripe_install.php	/^    public function addTabs()$/;"	f
+addTabs	.\stripe_install.php	/^    protected function addTabs()$/;"	f
 all	.\vendor\stripe\stripe-php\lib\Account.php	/^    public static function all($params = null, $opts = null)$/;"	f
 all	.\vendor\stripe\stripe-php\lib\ApplicationFee.php	/^    public static function all($params = null, $opts = null)$/;"	f
 all	.\vendor\stripe\stripe-php\lib\BalanceTransaction.php	/^    public static function all($params = null, $opts = null)$/;"	f
@@ -242,6 +246,7 @@ baseUrl	.\vendor\stripe\stripe-php\lib\FileUpload.php	/^    public static functi
 body	.\controllers\front\charge.php	/^		  $body = $e->getJsonBody();$/;"	v
 body	.\vendor\stripe\stripe-php\lib\ApiResponse.php	/^        $this->body = $body;$/;"	v
 body	.\vendor\stripe\stripe-php\lib\ApiResponse.php	/^    public $body;$/;"	v
+bootstrap	.\controllers\admin\StripeAdminOrderController.php	/^        $this->bootstrap = true;$/;"	v
 bootstrap	.\stripe.php	/^		$this->bootstrap = true;$/;"	v
 c	.\vendor\stripe\stripe-php\tests\ChargeTest.php	/^        $c = Charge::create($/;"	v
 c	.\vendor\stripe\stripe-php\tests\CouponTest.php	/^        $c = Coupon::create($/;"	v
@@ -335,7 +340,7 @@ create	.\vendor\stripe\stripe-php\lib\SKU.php	/^    public static function creat
 create	.\vendor\stripe\stripe-php\lib\Token.php	/^    public static function create($params = null, $opts = null)$/;"	f
 create	.\vendor\stripe\stripe-php\lib\Transfer.php	/^    public static function create($params = null, $opts = null)$/;"	f
 createDisputedCharge	.\vendor\stripe\stripe-php\tests\DisputeTest.php	/^    private function createDisputedCharge()$/;"	f
-createTables	.\stripe_install.php	/^    public function createTables()$/;"	f
+createTables	.\stripe_install.php	/^    protected function createTables()$/;"	f
 createTestAccount	.\vendor\stripe\stripe-php\tests\TestCase.php	/^    protected static function createTestAccount(array $attributes = array())$/;"	f
 createTestBitcoinReceiver	.\vendor\stripe\stripe-php\tests\TestCase.php	/^    protected static function createTestBitcoinReceiver($email)$/;"	f
 createTestCharge	.\vendor\stripe\stripe-php\tests\TestCase.php	/^    protected static function createTestCharge(array $attributes = array())$/;"	f
@@ -437,8 +442,10 @@ fallbackDirsPsr4	.\vendor\composer\ClassLoader.php	/^    private $fallbackDirsPs
 fee	.\vendor\stripe\stripe-php\lib\ApplicationFeeRefund.php	/^        $fee = $this['fee'];$/;"	v
 fee	.\vendor\stripe\stripe-php\lib\ApplicationFeeRefund.php	/^        $fee = Util\\Util::utf8($fee);$/;"	v
 feeExtn	.\vendor\stripe\stripe-php\lib\ApplicationFeeRefund.php	/^        $feeExtn = urlencode($fee);$/;"	v
+fields_form	.\controllers\admin\StripeAdminOrderController.php	/^        $this->fields_form = array($/;"	v
 fields_form	.\stripe.php	/^		$fields_form = array($/;"	v
 fields_form	.\stripe.php	/^		$this->fields_form = array();$/;"	v
+fields_list	.\controllers\admin\StripeAdminOrderController.php	/^        $this->fields_list = array($/;"	v
 file	.\vendor\composer\ClassLoader.php	/^            $file = $this->findFileWithExtension($class, '.hh');$/;"	v
 file	.\vendor\composer\ClassLoader.php	/^        $file = $this->findFileWithExtension($class, '.php');$/;"	v
 file	.\vendor\composer\ClassLoader.php	/^        if ($this->useIncludePath && $file = stream_resolve_include_path($logicalPathPsr0)) {$/;"	v
@@ -533,6 +540,7 @@ includes	.\vendor\stripe\stripe-php\lib\Util\Set.php	/^    public function inclu
 init	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^    public static function init()$/;"	f
 initContent	.\controllers\front\charge.php	/^	public function initContent()$/;"	f
 initContent	.\controllers\front\error.php	/^	public function initContent()$/;"	f
+initPageHeaderToolbar	.\controllers\admin\StripeAdminOrderController.php	/^    public function initPageHeaderToolbar()$/;"	f
 install	.\stripe.php	/^	public function install()$/;"	f
 instance	.\vendor\stripe\stripe-php\lib\ApiResource.php	/^        $instance = new static($id, $opts);$/;"	v
 instance	.\vendor\stripe\stripe-php\lib\HttpClient\CurlClient.php	/^    private static $instance;$/;"	v
@@ -578,11 +586,13 @@ key	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^            foreach ($id a
 key	.\vendor\stripe\stripe-php\lib\Util\RequestOptions.php	/^                $key = $options['api_key'];$/;"	v
 key	.\vendor\stripe\stripe-php\lib\Util\RequestOptions.php	/^            $key = null;$/;"	v
 keys	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^    public function keys()$/;"	f
+lang	.\controllers\admin\StripeAdminOrderController.php	/^        $this->lang = false;$/;"	v
 lang	.\stripe.php	/^		$lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));$/;"	v
 langVersion	.\vendor\stripe\stripe-php\lib\ApiRequestor.php	/^        $langVersion = phpversion();$/;"	v
 length	.\vendor\composer\ClassLoader.php	/^            $length = strlen($prefix);$/;"	v
 lines	.\vendor\stripe\stripe-php\tests\InvoiceTest.php	/^        $lines = $invoice->lines->all(array('limit' => 10));$/;"	v
 list	.\vendor\stripe\stripe-php\tests\UtilTest.php	/^        $list = array(5, 'nstaoush', array());$/;"	v
+list_no_link	.\controllers\admin\StripeAdminOrderController.php	/^        $this->list_no_link = true;$/;"	v
 loadClass	.\vendor\composer\ClassLoader.php	/^    public function loadClass($class)$/;"	f
 loadClassLoader	.\vendor\composer\autoload_real.php	/^    public static function loadClassLoader($class)$/;"	f
 loader	.\vendor\composer\ClassLoader.php	/^ *     $loader = new \\Composer\\Autoload\\ClassLoader();$/;"	v
@@ -761,6 +771,7 @@ parent	.\vendor\stripe\stripe-php\lib\ExternalAccount.php	/^        $parent = Ut
 parentExtn	.\vendor\stripe\stripe-php\lib\ExternalAccount.php	/^        $parentExtn = urlencode($parent);$/;"	v
 parentExtn	.\vendor\stripe\stripe-php\tests\BitcoinReceiverTest.php	/^        $parentExtn = $receiver['customer'];$/;"	v
 parentExtn	.\vendor\stripe\stripe-php\tests\ExternalAccountTest.php	/^        $parentExtn = $externalAccount['customer'];$/;"	v
+parent_tab	.\stripe_install.php	/^        $parent_tab = new Tab();$/;"	v
 parse	.\vendor\stripe\stripe-php\lib\Util\RequestOptions.php	/^    public static function parse($options)$/;"	f
 partial	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^    public function refreshFrom($values, $opts, $partial = false)$/;"	v
 path	.\vendor\stripe\stripe-php\lib\ExternalAccount.php	/^            $path = 'cards';$/;"	v
@@ -780,6 +791,7 @@ postDeleteCards	.\vendor\stripe\stripe-php\tests\RecipientTest.php	/^        $po
 postDeleteCustomer	.\vendor\stripe\stripe-php\tests\CustomerTest.php	/^        $postDeleteCustomer = Customer::retrieve($customer->id);$/;"	v
 postDeleteRecipient	.\vendor\stripe\stripe-php\tests\RecipientTest.php	/^        $postDeleteRecipient = Recipient::retrieve($recipient->id);$/;"	v
 postDeleteSources	.\vendor\stripe\stripe-php\tests\CustomerTest.php	/^        $postDeleteSources = $postDeleteCustomer->sources->all();$/;"	v
+postProcess	.\controllers\admin\StripeAdminOrderController.php	/^    public function postProcess()$/;"	f
 postProcess	.\stripe.php	/^	public function postProcess()$/;"	f
 postValidation	.\stripe.php	/^	public function postValidation()$/;"	f
 post_errors	.\stripe.php	/^	private $post_errors = array();$/;"	v
@@ -835,6 +847,7 @@ reloaded	.\vendor\stripe\stripe-php\tests\TransferTest.php	/^        $reloaded =
 removed	.\vendor\stripe\stripe-php\lib\AttachedObject.php	/^        $removed = array_diff(array_keys($this->_values), array_keys($properties));$/;"	v
 removed	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^            $removed = array_diff(array_keys($this->_values), array_keys($values));$/;"	v
 removed	.\vendor\stripe\stripe-php\lib\StripeObject.php	/^            $removed = new Util\\Set();$/;"	v
+renderForm	.\controllers\admin\StripeAdminOrderController.php	/^    public function renderForm()$/;"	f
 renderForm	.\stripe.php	/^	public function renderForm()$/;"	f
 replaceWith	.\vendor\stripe\stripe-php\lib\AttachedObject.php	/^    public function replaceWith($properties)$/;"	f
 request	.\vendor\stripe\stripe-php\lib\ApiRequestor.php	/^    public function request($method, $url, $params = null, $headers = null)$/;"	f
@@ -929,12 +942,14 @@ stripeProduct	.\vendor\stripe\stripe-php\tests\ProductTest.php	/^        $stripe
 stripeRecipient	.\vendor\stripe\stripe-php\tests\RecipientTest.php	/^        $stripeRecipient = Recipient::retrieve($recipient->id);$/;"	v
 stripeSku	.\vendor\stripe\stripe-php\tests\ProductTest.php	/^        $stripeSku = SKU::retrieve($SkuID);$/;"	v
 stripe_install	.\stripe.php	/^		$stripe_install = new StripeInstall();$/;"	v
+stripe_tab	.\stripe_install.php	/^        $stripe_tab = new Tab();$/;"	v
 strips	.\vendor\stripe\stripe-php\lib\ApplicationFee.php	/^     *    underscore in it. The parent `className` function strips underscores.$/;"	f
 sub	.\vendor\stripe\stripe-php\tests\SubscriptionTest.php	/^        $sub = $customer->subscriptions->create($/;"	v
 sub	.\vendor\stripe\stripe-php\tests\SubscriptionTest.php	/^        $sub = $customer->subscriptions->create(array('plan' => $planID));$/;"	v
 sub	.\vendor\stripe\stripe-php\tests\SubscriptionTest.php	/^        $sub = $customer->subscriptions->retrieve($sub->id);$/;"	v
 sublist	.\vendor\stripe\stripe-php\tests\DisputeTest.php	/^        $sublist = Dispute::all($/;"	v
 tab	.\stripe.php	/^		$this->tab = 'payments_gateways';$/;"	v
+table	.\controllers\admin\StripeAdminOrderController.php	/^        $this->table = 'stripe_orders';$/;"	v
 testAPIKeyArray	.\vendor\stripe\stripe-php\tests\RequestOptionsTest.php	/^    public function testAPIKeyArray()$/;"	f
 testAll	.\vendor\stripe\stripe-php\tests\DisputeTest.php	/^    public function testAll()$/;"	f
 testAll	.\vendor\stripe\stripe-php\tests\InvoiceTest.php	/^    public function testAll()$/;"	f
@@ -1063,6 +1078,7 @@ token	.\controllers\front\charge.php	/^			$token = Tools::getValue('stripeToken'
 token	.\vendor\stripe\stripe-php\tests\CustomerTest.php	/^        $token = Token::create($/;"	v
 token	.\vendor\stripe\stripe-php\tests\RecipientTest.php	/^        $token = Token::create($/;"	v
 token	.\vendor\stripe\stripe-php\tests\TokenTest.php	/^        $token = new Token('abcd\/efgh');$/;"	v
+toolbar_title	.\controllers\admin\StripeAdminOrderController.php	/^        $this->toolbar_title = $this->l('Stripe Orders');$/;"	v
 transactions	.\vendor\stripe\stripe-php\tests\BitcoinReceiverTest.php	/^        $transactions = $receiver->transactions->all(array("limit" => 1));$/;"	v
 transfer	.\vendor\stripe\stripe-php\lib\TransferReversal.php	/^        $transfer = $this['transfer'];$/;"	v
 transfer	.\vendor\stripe\stripe-php\lib\TransferReversal.php	/^        $transfer = Util\\Util::utf8($transfer);$/;"	v

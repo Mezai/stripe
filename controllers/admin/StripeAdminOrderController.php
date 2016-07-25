@@ -1,7 +1,12 @@
 <?php
 
-class StripeAdminOrderController extends ModuleAdminController {
-    public function __construct() {
+use Stripe\Refund;
+use Stripe\Stripe;
+
+class StripeAdminOrderController extends ModuleAdminController
+{
+    public function __construct()
+    {
         $this->bootstrap = true;
         $this->table = 'stripe_orders';
         $this->lang = false;
@@ -13,8 +18,10 @@ class StripeAdminOrderController extends ModuleAdminController {
             'id_stripe_order' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
             'id_transaction' => array('title' => $this->l('Transaction Id')),
         );
+        Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
     }
-    public function renderForm() {
+    public function renderForm()
+    {
         $this->fields_form = array(
             'legend' => array(
                 'title' => $this->l('Stripe'),
@@ -36,19 +43,34 @@ class StripeAdminOrderController extends ModuleAdminController {
                     'name' => 'id_transaction',
                     'required' => false,
                     'col' => 4,
-                    'hint' => $this->l('Stripe transaction id'), 
+                    'hint' => $this->l('Stripe transaction id'),
 
                 ),
             ),
         );
-       return parent::renderForm(); 
+        return parent::renderForm();
     }
 
-    public function postProcess() {
-    // Handle credits and so on 
+    public function postProcess()
+    {
+        
+        try {
+            if (Tools::isSubmit('credit_stripe'))
+            {
+                Refund::create(
+                    array(
+                        'charge' => Tools::getValue('stripe_refund_transaction')
+                    )
+                );
+            }
+            $this->displayInformation('Successfully refunded transaction');
+        } catch(Exception $e) {
+            $this->displayWarning('Credit failed with message : '.$e->getMessage(). 'and error code : '.$e->getCode());            
+        }
     }
 
-    public function initPageHeaderToolbar() {
+    public function initPageHeaderToolbar()
+    {
         $this->initToolbar();
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['module_link'] =  array(
