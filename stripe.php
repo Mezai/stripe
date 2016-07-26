@@ -24,230 +24,228 @@
 *  International Registered Trademark & Property of PrestaShop SA
 */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 
 require_once(dirname(__FILE__).'/vendor/autoload.php');
 
-class Stripe extends PaymentModule
+class stripe extends PaymentModule
 {
-	private $post_errors = array();
-	private $html = '';
+    private $post_errors = array();
+    private $html = '';
 
-	public function __construct()
-	{
-		$this->name = 'Stripe';
-		$this->version = '1.0.0';
-		$this->author = 'JET';
-		$this->bootstrap = true;
-		$this->currencies = true;
-		$this->currencies_mode = 'checkbox';
-		$this->tab = 'payments_gateways';
-	
+    public function __construct()
+    {
+        $this->name = 'Stripe';
+        $this->version = '1.0.0';
+        $this->author = 'JET';
+        $this->bootstrap = true;
+        $this->currencies = true;
+        $this->currencies_mode = 'checkbox';
+        $this->tab = 'payments_gateways';
+    
 
-		parent::__construct();
-		$this->displayName = $this->l('Stripe payment gateway');
-		$this->description = $this->l('Lets you use the Stripe checkout service');
-	}
+        parent::__construct();
+        $this->displayName = $this->l('Stripe payment gateway');
+        $this->description = $this->l('Lets you use the Stripe checkout service');
+    }
 
 
-	public function install()
-	{
+    public function install()
+    {
+        require_once(dirname(__FILE__).'/stripe_install.php');
 
-		require_once(dirname(__FILE__).'/stripe_install.php');
+        $stripe_install = new StripeInstall();
 
-		$stripe_install = new StripeInstall();
-
-		return parent::install()
-		&& $this->registerHook('payment')
-		&& $this->registerHook('paymentReturn')
-		&& $this->registerHook('header')
+        return parent::install()
+        && $this->registerHook('payment')
+        && $this->registerHook('paymentReturn')
+        && $this->registerHook('header')
                 && $this->registerHook('backOfficeHeader')
                 && $stripe_install->addTabs()
                 && $stripe_install->createTables();
-	}
+    }
 
-	public function uninstall()
-	{
-		return parent::uninstall()
-		&& Configuration::deleteByName('STRIPE_SECRET_KEY')
-		&& Configuration::deleteByName('STRIPE_PUBLISHABLE_KEY')
-		&& Configuration::deleteByName('STRIPE_MODE');
-	}
+    public function uninstall()
+    {
+        return parent::uninstall()
+        && Configuration::deleteByName('STRIPE_SECRET_KEY')
+        && Configuration::deleteByName('STRIPE_PUBLISHABLE_KEY')
+        && Configuration::deleteByName('STRIPE_MODE');
+    }
 
-	public function hookHeader()
-	{
-		$this->context->controller->addJS("https://checkout.stripe.com/checkout.js");
-	}
+    public function hookHeader()
+    {
+        $this->context->controller->addJS("https://checkout.stripe.com/checkout.js");
+    }
 
-	
-	public function hookPayment($params)
-	{
-		if (!$this->active)
-			return;
-		
-		$cart = $this->context->cart;
-		$currency = new Currency((int)$cart->id_currency);
-
-
-		 $stripe = array(
-		 	'secret_key' => (String)Configuration::get('STRIPE_SECRET_KEY'),
-		 	'publishable_key' => (String)Configuration::get('STRIPE_PUBLISHABLE_KEY')
-		 	);
-
-		\Stripe\Stripe::setApiKey((String)Configuration::get('STRIPE_SECRET_KEY'));
-
-		$desc = '';
-		foreach ($cart->getProducts() as $product) {
-			$desc .= $product['name'];		 
-		}		 
-		
-
-		 $this->context->smarty->assign(array(
-		 	'stripe_pk_key' => $stripe['publishable_key'],
-		 	'shop_name' => $this->context->shop->name,
-		 	'stripe_currency' => Tools::strtolower($currency->iso_code),
-		 	'stripe_desc' => $desc,
-		 	'total_amount' => (int)($cart->getOrderTotal(true, CART::BOTH) * 100),
-		 	'this_path_img' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/views/img/'
-		 	));
-
-		 return $this->display(__FILE__, 'payment.tpl');
-
-	}
-
-	public function hookPaymentReturn($params)
-	{
-		if (!$this->active)
-			return;
-
-		return $this->display(__FILE__, 'payment-return.tpl');
-	}
-
-	public function postProcess()
-	{
-		if (Tools::isSubmit('saveBtn'))
-		{
-			Configuration::updateValue('STRIPE_SECRET_KEY', Tools::getValue('STRIPE_SECRET_KEY'));
-			Configuration::updateValue('STRIPE_PUBLISHABLE_KEY', Tools::getValue('STRIPE_PUBLISHABLE_KEY'));
-			Configuration::updateValue('STRIPE_MODE', Tools::getValue('STRIPE_MODE'));
-		}
-	}
-
-	public function postValidation()
-	{
-		if (Tools::isSubmit('saveBtn'))
-		{
-			if (!Tools::getValue('STRIPE_SECRET_KEY'))
-				$this->post_errors[] = $this->l('You need to set a secret from Stripe');
-
-			if (!Tools::getValue('STRIPE_PUBLISHABLE_KEY'))
-				$this->post_errors[] = $this->l('You need to set a publishable key from Stripe');
-		}
-	}
-
-	public function getContent()
-	{
-		if (Tools::isSubmit('saveBtn'))
-		{
-			$this->postValidation();
-			if (!count($this->post_errors))
-				$this->postProcess();
-
-			else
-
-				foreach ($this->postErrors as $error) {
-					$this->html = $this->displayError($error);
-				}
-		}
-		else
-			$this->html .= '<br />';
-			$this->html .= $this->renderForm();
-
-		return $this->html;
-	}
-
-	public function renderForm()
-	{
-		$fields_form = array(
-		'form' => array(
-			'legend' => array(
-				'title' => $this->l('Configure Stripe'),
-				'icon' => 'icon-cogs'
-				),
-			'input' => array(
-				array(
-					'type' => 'text',
-					'label' => $this->l('Secret key'),
-					'desc' => $this->l('Secret key from Stripe'),
-					'required' => true,
-					'name' => 'STRIPE_SECRET_KEY',
-					'class' => 'fixed-width-xxl',
-				),
-				array(
-					'type' => 'text',
-					'label' => $this->l('Publishable key'),
-					'desc' => $this->l('Publishable key from Stripe'),
-					'class' => 'fixed-width-xxl',
-					'name' => 'STRIPE_PUBLISHABLE_KEY',
-					'required' => true
-				),
-				array(
-					'type' => 'switch',
-					'label' => $this->l('Test mode'),
-					'desc' => $this->l('Select test or live mode'),
-					'name' => 'STRIPE_MODE',
-					'values' => array(
-						array(
-							'id' => 'active_on',
-							'value' => 1,
-							'label' => $this->l('Live')
-							),
-						array(
-							'id' => 'active_off',
-							'value' => 0,
-							'label' => $this->l('Test')
-							)
-						),
-					),
-				),
-				'submit' => array(
-					'title' => $this->l('Save'),
-					'class' => 'button pull-right'
-					)
-				),
-			);
+    public function hookPayment($params)
+    {
+        if (!$this->active) {
+            return;
+        }
+        
+        $cart = $this->context->cart;
+        $currency = new Currency((int)$cart->id_currency);
 
 
-		$helper = new HelperForm();
-		$helper->show_toolbar = false;
-		$helper->table = $this->table;
-		$lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
-		$helper->default_form_language = $lang->id;
-		$helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG')
-		? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
-		$this->fields_form = array();
-		$helper->id = (int)Tools::getValue('id_carrier');
-		$helper->identifier = $this->identifier;
-		$helper->submit_action = 'saveBtn';
-		$helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).
-		'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
-		$helper->token = Tools::getAdminTokenLite('AdminModules');
-		$helper->tpl_vars = array(
-			'fields_value' => $this->getConfigFieldsValues(),
-			'languages' => $this->context->controller->getLanguages(),
-			'id_language' => $this->context->language->id
-			);
-		return $helper->generateForm(array($fields_form));
-	}
+        $stripe = array(
+            'secret_key' => (String)Configuration::get('STRIPE_SECRET_KEY'),
+            'publishable_key' => (String)Configuration::get('STRIPE_PUBLISHABLE_KEY')
+            );
 
-	public function getConfigFieldsValues()
-	{
-		return array(
-			'STRIPE_SECRET_KEY' => Tools::getValue('STRIPE_SECRET_KEY', Configuration::get('STRIPE_SECRET_KEY')),
-			'STRIPE_PUBLISHABLE_KEY' => Tools::getValue('STRIPE_PUBLISHABLE_KEY', Configuration::get('STRIPE_PUBLISHABLE_KEY')),
-			'STRIPE_MODE' => Tools::getValue('STRIPE_MODE', Configuration::get('STRIPE_MODE'))
-			);
-	}
+        \Stripe\Stripe::setApiKey((String)Configuration::get('STRIPE_SECRET_KEY'));
+
+        $desc = '';
+        foreach ($cart->getProducts() as $product) {
+            $desc .= $product['name'];
+        }
+        
+
+        $this->context->smarty->assign(array(
+            'stripe_pk_key' => $stripe['publishable_key'],
+            'shop_name' => $this->context->shop->name,
+            'stripe_currency' => Tools::strtolower($currency->iso_code),
+            'stripe_desc' => $desc,
+            'total_amount' => (int)($cart->getOrderTotal(true, CART::BOTH) * 100),
+            'this_path_img' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/views/img/'
+            ));
+
+        return $this->display(__FILE__, 'payment.tpl');
+    }
+
+    public function hookDisplayPaymentReturn()
+    {
+        if (!$this->active) {
+            return;
+        }
+
+        return $this->display(__FILE__, 'payment_return.tpl');
+    }
+
+    public function postProcess()
+    {
+        if (Tools::isSubmit('saveBtn')) {
+            Configuration::updateValue('STRIPE_SECRET_KEY', Tools::getValue('STRIPE_SECRET_KEY'));
+            Configuration::updateValue('STRIPE_PUBLISHABLE_KEY', Tools::getValue('STRIPE_PUBLISHABLE_KEY'));
+            Configuration::updateValue('STRIPE_MODE', Tools::getValue('STRIPE_MODE'));
+        }
+    }
+
+    public function postValidation()
+    {
+        if (Tools::isSubmit('saveBtn')) {
+            if (!Tools::getValue('STRIPE_SECRET_KEY')) {
+                $this->post_errors[] = $this->l('You need to set a secret from Stripe');
+            }
+
+            if (!Tools::getValue('STRIPE_PUBLISHABLE_KEY')) {
+                $this->post_errors[] = $this->l('You need to set a publishable key from Stripe');
+            }
+        }
+    }
+
+    public function getContent()
+    {
+        if (Tools::isSubmit('saveBtn')) {
+            $this->postValidation();
+            if (!count($this->post_errors)) {
+                $this->postProcess();
+            } else {
+                foreach ($this->postErrors as $error) {
+                    $this->html = $this->displayError($error);
+                }
+            }
+        } else {
+            $this->html .= '<br />';
+        }
+        $this->html .= $this->renderForm();
+
+        return $this->html;
+    }
+
+    public function renderForm()
+    {
+        $fields_form = array(
+        'form' => array(
+            'legend' => array(
+                'title' => $this->l('Configure Stripe'),
+                'icon' => 'icon-cogs'
+                ),
+            'input' => array(
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Secret key'),
+                    'desc' => $this->l('Secret key from Stripe'),
+                    'required' => true,
+                    'name' => 'STRIPE_SECRET_KEY',
+                    'class' => 'fixed-width-xxl',
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Publishable key'),
+                    'desc' => $this->l('Publishable key from Stripe'),
+                    'class' => 'fixed-width-xxl',
+                    'name' => 'STRIPE_PUBLISHABLE_KEY',
+                    'required' => true
+                ),
+                array(
+                    'type' => 'switch',
+                    'label' => $this->l('Test mode'),
+                    'desc' => $this->l('Select test or live mode'),
+                    'name' => 'STRIPE_MODE',
+                    'values' => array(
+                        array(
+                            'id' => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Live')
+                            ),
+                        array(
+                            'id' => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('Test')
+                            )
+                        ),
+                    ),
+                ),
+                'submit' => array(
+                    'title' => $this->l('Save'),
+                    'class' => 'button pull-right'
+                    )
+                ),
+            );
+
+
+        $helper = new HelperForm();
+        $helper->show_toolbar = false;
+        $helper->table = $this->table;
+        $lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
+        $helper->default_form_language = $lang->id;
+        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG')
+        ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
+        $this->fields_form = array();
+        $helper->id = (int)Tools::getValue('id_carrier');
+        $helper->identifier = $this->identifier;
+        $helper->submit_action = 'saveBtn';
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).
+        '&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->tpl_vars = array(
+            'fields_value' => $this->getConfigFieldsValues(),
+            'languages' => $this->context->controller->getLanguages(),
+            'id_language' => $this->context->language->id
+            );
+        return $helper->generateForm(array($fields_form));
+    }
+
+    public function getConfigFieldsValues()
+    {
+        return array(
+            'STRIPE_SECRET_KEY' => Tools::getValue('STRIPE_SECRET_KEY', Configuration::get('STRIPE_SECRET_KEY')),
+            'STRIPE_PUBLISHABLE_KEY' => Tools::getValue('STRIPE_PUBLISHABLE_KEY', Configuration::get('STRIPE_PUBLISHABLE_KEY')),
+            'STRIPE_MODE' => Tools::getValue('STRIPE_MODE', Configuration::get('STRIPE_MODE'))
+            );
+    }
 }
