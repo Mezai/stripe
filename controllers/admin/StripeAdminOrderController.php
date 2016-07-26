@@ -1,6 +1,7 @@
 <?php
 use Stripe\Stripe;
 use Stripe\Refund;
+
 class StripeAdminOrderController extends ModuleAdminController
 {
     public function __construct()
@@ -16,6 +17,28 @@ class StripeAdminOrderController extends ModuleAdminController
         $this->fields_list = array(
             'id_stripe_order' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
             'id_transaction' => array('title' => $this->l('Transaction Id')),
+        );
+        $this->fields_options = array(
+            'refund' => array(
+                'title' => $this->l('Refund order'),
+                'description' => $this->l('This function will refund the order'),
+                'icon' => 'icon-user',
+                'fields' => array(
+                    'STRIPE_REFUND_ID' => array(
+                        'title' => $this->l('Refund order'),
+                        'desc' => $this->l('Fill in the charge id to refund the order'),
+                        'validation' => 'isUnsignedInt',
+                        'class' => 'fixed-width-xxl',
+                        'type' => 'text',
+                    ),
+                ),
+                
+                'submit' => array(
+                    'title' => $this->l('Process refund'),
+                    'class' => 'button pull-right',
+                    'name' => 'stripe_refund',
+                ),
+            ),
         );
         parent::__construct();
     }
@@ -51,10 +74,8 @@ class StripeAdminOrderController extends ModuleAdminController
 
     public function postProcess()
     {
-        
         try {
-            if (Tools::isSubmit('credit_stripe'))
-            {
+            if (Tools::isSubmit('credit_stripe')) {
                 Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
                 
                 Refund::create(
@@ -64,8 +85,8 @@ class StripeAdminOrderController extends ModuleAdminController
                 );
             }
             $this->displayInformation('Successfully refunded transaction');
-        } catch(Exception $e) {
-            $this->displayWarning('Credit failed with message : '.$e->getMessage(). 'and error code : '.$e->getCode());            
+        } catch (Exception $e) {
+            $this->displayWarning('Credit failed with message : '.$e->getMessage(). 'and error code : '.$e->getCode());
         }
     }
 
