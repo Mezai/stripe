@@ -81,8 +81,11 @@ class StripeChargeModuleFrontController extends ModuleFrontController
                 'id_transaction' => pSQL($charge['id']),
             ));
 
-            Tools::redirect('index.php?controller=order-confirmation&id_cart='.
-                        $cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$this->context->customer->secure_key);
+            Tools::redirect(
+                'index.php?controller=order-confirmation&id_cart='.
+                $cart->id.'&id_module='.$this->module->id.'&id_order='.
+                $this->module->currentOrder.'&key='.$this->context->customer->secure_key
+            );
         } catch (Card $e) {
             $body = $e->getJsonBody();
             $err  = $body['error'];
