@@ -27,3 +27,4 @@ tags
 # Ignore files on root directory
 robots.txt
 sitemap.xml
+config_sv.xml
