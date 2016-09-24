@@ -64,11 +64,22 @@ class StripeChargeModuleFrontController extends ModuleFrontController
                 'transaction_id' => $charge['id']
                 );
 
-            $this->module->validateOrder($cart->id, Configuration::get('PS_OS_PAYMENT'), $amount, $this->module->displayName, $extra['transaction_id'],
-                            array(), (int)$currency->id, false, $this->context->cart->secure_key);
-            Db::getInstance()->Execute('
-                            INSERT INTO `'._DB_PREFIX_.'stripe_orders` (`id_stripe_order`, `id_transaction`) VALUES ('.(int)$this->module->currentOrder.', \''.pSQL($charge['id']).'\')
-                        ');
+            $this->module->validateOrder(
+                $cart->id,
+                Configuration::get('PS_OS_PAYMENT'),
+                $amount,
+                $this->module->displayName,
+                $extra['transaction_id'],
+                array(),
+                (int)$currency->id,
+                false,
+                $this->context->cart->secure_key
+            );
+
+            Db::getInstance()->insert('target_table', array(
+                'id_stripe_order' => (int)$this->module->currentOrder,
+                'id_transaction' => pSQL($charge['id']),
+            ));
 
             Tools::redirect('index.php?controller=order-confirmation&id_cart='.
                         $cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$this->context->customer->secure_key);

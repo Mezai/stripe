@@ -30,7 +30,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once(dirname(__FILE__).'/vendor/autoload.php');
 
-class stripe extends PaymentModule
+class Stripe extends PaymentModule
 {
     private $post_errors = array();
     private $html = '';
