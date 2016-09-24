@@ -42,8 +42,7 @@ class StripeChargeModuleFrontController extends ModuleFrontController
         $error_page = $this->context->link->getModuleLink('stripe', 'error');
         $customer = new Customer((int)$cart->id_customer);
         $amount = $cart->getOrderTotal(true, Cart::BOTH);
-        $currency = new Currency((int)$cart->id_currency);
-
+        
         try {
             Stripe::setApiKey((String)Configuration::get('STRIPE_SECRET_KEY'));
             
@@ -57,7 +56,7 @@ class StripeChargeModuleFrontController extends ModuleFrontController
             $charge = Charge::create(array(
                 'customer' => $customer->id,
                 'amount'   => (int)($cart->getOrderTotal(true, CART::BOTH) * 100),
-                'currency' => 'sek'
+                'currency' => Tools::strtolower($this->context->currency->iso_code)
             ));
 
             $extra = array(
@@ -71,12 +70,12 @@ class StripeChargeModuleFrontController extends ModuleFrontController
                 $this->module->displayName,
                 $extra['transaction_id'],
                 array(),
-                (int)$currency->id,
+                (int)$this->context->currency->id,
                 false,
                 $this->context->cart->secure_key
             );
 
-            Db::getInstance()->insert('target_table', array(
+            Db::getInstance()->insert('stripe_orders', array(
                 'id_stripe_order' => (int)$this->module->currentOrder,
                 'id_transaction' => pSQL($charge['id']),
             ));
