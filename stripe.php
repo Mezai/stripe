@@ -30,7 +30,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once(dirname(__FILE__).'/vendor/autoload.php');
 
-class stripe extends PaymentModule
+class Stripe extends PaymentModule
 {
     private $post_errors = array();
     private $html = '';
@@ -70,7 +70,7 @@ class stripe extends PaymentModule
 
         foreach (scandir(_PS_MODULE_DIR_.$this->name.'/views/img/') as $file) {
             if (in_array($file, array('stripe_logo.jpg', 'stripe_logo.gif', 'stripe_logo.png'))) {
-                Configuration::updateGlobalValue('STRIPE_IMAGE_EXT', substr($file, strrpos($file, '.') + 1));
+                Configuration::updateGlobalValue('STRIPE_IMAGE_EXT', Tools::substr($file, strrpos($file, '.') + 1));
             }
         }
 
@@ -227,7 +227,7 @@ class stripe extends PaymentModule
             Configuration::updateValue('STRIPE_PANEL_LABEL', Tools::getValue('STRIPE_PANEL_LABEL'));
 
             if (isset($_FILES['STRIPE_IMAGE'])) {
-                Configuration::updateValue('STRIPE_IMAGE_EXT', substr($_FILES['STRIPE_IMAGE']['name'], strrpos($_FILES['STRIPE_IMAGE']['name'], '.') + 1));
+                Configuration::updateValue('STRIPE_IMAGE_EXT', Tools::substr($_FILES['STRIPE_IMAGE']['name'], strrpos($_FILES['STRIPE_IMAGE']['name'], '.') + 1));
             }
             $this->html .= $this->displayConfirmation($this->l('Settings updated'));
         }
