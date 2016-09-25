@@ -26,6 +26,7 @@
 
 use Stripe\Stripe;
 use Stripe\Refund;
+use Stripe\Transfer;
 
 class StripeAdminOrderController extends ModuleAdminController
 {
@@ -64,8 +65,36 @@ class StripeAdminOrderController extends ModuleAdminController
                     'name' => 'stripe_refund',
                 ),
             ),
+            'transfer' => array(
+                'title' => $this->l('Transfer'),
+                'description' => $this->l('This feature will transfer money to your bank account'),
+                'icon' => 'icon-user',
+                'fields' => array(
+                    'STRIPE_TRANSFER_AMOUNT' => array(
+                        'title' => $this->l('Amount'),
+                        'desc' => $this->l('Fill in the amount to transfer to your bank'),
+                        'validation' => 'isUnsignedInt',
+                        'class' => 'fixed-width-xxl',
+                        'type' => 'text',
+                    ),
+                    'STRIPE_TRANSFER_CURRENCY' => array(
+                        'title' => $this->l('Currency'),
+                        'desc' => $this->l('Fill in the currency to transfer'),
+                        'validation' => 'isUnsignedInt',
+                        'class' => 'fixed-width-xxl',
+                        'type' => 'text',
+                    ),
+                ),
+                
+                'submit' => array(
+                    'title' => $this->l('Process transfer'),
+                    'class' => 'button pull-right',
+                    'name' => 'stripe_transfer',
+                ),
+            ),
         );
         parent::__construct();
+        Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
     }
     public function renderForm()
     {
@@ -101,19 +130,27 @@ class StripeAdminOrderController extends ModuleAdminController
     {
         if (Tools::isSubmit('stripe_refund')) {
             try {
-                
-                    Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
-                    
-                    Refund::create(
+                Refund::create(
                         array(
                             'charge' => Tools::getValue('STRIPE_REFUND_ID')
                         )
                     );
 
-                    $this->displayInformation('Successfully refunded transaction');
-                
+                $this->displayInformation('Successfully refunded transaction');
             } catch (Exception $e) {
                 $this->displayWarning('Credit failed with message : '.$e->getMessage(). 'and error code : '.$e->getCode());
+            }
+        }
+        if (Tools::isSubmit('stripe_transfer')) {
+            try {
+                Transfer::create(array(
+                        "amount" => ((int)Tools::getValue('STRIPE_TRANSFER_AMOUNT')) * 100,
+                        "currency" => trim(Tools::strtolower(Tools::getValue('STRIPE_TRANSFER_CURRENCY'))),
+                        "recipient" => "self",
+                        )
+                    );
+            } catch (Exception $e) {
+                $this->displayWarning('Transfer failed with message : '.$e->getMessage(). 'and error code : '.$e->getCode());
             }
         }
     }
@@ -122,12 +159,12 @@ class StripeAdminOrderController extends ModuleAdminController
     {
         $this->initToolbar();
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['module_link'] =  array(
-                'href' => 'http://link.com',
+            $this->page_header_toolbar_btn['module_link'] = array(
+                'href' => $this->context->link->getAdminLink('AdminModules').'&configure=stripe&tab_module=payments_gateways&module_name=stripe',
                 'desc' => $this->l('Go to module', null, null, false),
-                'icon' => 'process-icon-modules-list',
+                'icon' => 'process-icon-modules-list'
             );
         }
-        return parent::initPageHeaderToolbar();
+        parent::initPageHeaderToolbar();
     }
 }
