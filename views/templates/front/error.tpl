@@ -29,3 +29,18 @@
 
 <h1>{l s='Payment error' mod='stripe'}</h1>
 
+<p>
+
+{l s='There is an error in your transaction:' mod='stripe'}
+
+<br/><br/>
+
+<strong>{$error|escape:'htmlall':'UTF-8'}</strong>
+
+
+
+<br/><br/>{l s='Please' mod='stripe'} <a href="{$link->getPageLink('order', true)|escape:'htmlall':'UTF-8'}">{l s='click here' mod='stripe'}</a> {l s='to return to checkout page' mod='stripe'}.
+
+<br /><br />{l s='For any questions or for further information, please contact our' mod='stripe'} <a href="{$link->getPageLink('contact', true)|escape:'htmlall':'UTF-8'}">{l s='customer support' mod='stripe'}</a>.
+
+</p>

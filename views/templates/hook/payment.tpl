@@ -37,11 +37,7 @@
 	var $form = $('#stripe_charge');
 	var handler = StripeCheckout.configure({
 		key: "{$stripe_pk_key|escape:'htmlall':'UTF-8'}",
-		image: "{$stripe_logo|escape:'htmlall':'UTF-8'}",
-		locale: 'auto',
-		zipCode: {$stripe_zip_code|escape:'htmlall':'UTF-8'},
 		token: function(token) {
-
 			$form.append($('<input type="hidden" name="stripeToken"/>').val(token.id));
 			$form.submit();
 		}
@@ -59,7 +55,11 @@
 			currency: "{$stripe_currency|escape:'htmlall':'UTF-8'}",
 			description: "{$stripe_desc|escape:'htmlall':'UTF-8'}",
 			allowRememberMe: {$stripe_remember_me|escape:'htmlall':'UTF-8'},
-			amount: {$total_amount|escape:'htmlall':'UTF-8'}
+			amount: {$total_amount|escape:'htmlall':'UTF-8'},
+			image: "{$stripe_logo|escape:'htmlall':'UTF-8'}",
+			locale: 'auto',
+			panelLabel: "{$stripe_label|escape:'htmlall':'UTF-8'}",
+			zipCode: {$stripe_zip_code|escape:'htmlall':'UTF-8'},
 		});
 		e.preventDefault();
 	});

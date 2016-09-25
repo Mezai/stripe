@@ -30,7 +30,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once(dirname(__FILE__).'/vendor/autoload.php');
 
-class Stripe extends PaymentModule
+class stripe extends PaymentModule
 {
     private $post_errors = array();
     private $html = '';
@@ -54,7 +54,7 @@ class Stripe extends PaymentModule
         $this->description = $this->l('Lets you use the Stripe checkout service');
 
         $this->image_name = 'stripe_logo';
-        $this->image = Tools::getMediaServer($this->name)._MODULE_DIR_.$this->name.'/views/img/'.$this->image_name.'.'.Configuration::get('STRIPE_IMAGE_EXT');      
+        $this->image = Tools::getMediaServer($this->name)._MODULE_DIR_.$this->name.'/views/img/'.$this->image_name.'.'.Configuration::get('STRIPE_IMAGE_EXT');
     }
 
     /**
@@ -69,7 +69,7 @@ class Stripe extends PaymentModule
         $stripe_install = new StripeInstall();
 
         foreach (scandir(_PS_MODULE_DIR_.$this->name.'/views/img/') as $file) {
-            if (in_array($file,array('stripe_logo.jpg', 'stripe_logo.gif', 'stripe_logo.png'))) {
+            if (in_array($file, array('stripe_logo.jpg', 'stripe_logo.gif', 'stripe_logo.png'))) {
                 Configuration::updateGlobalValue('STRIPE_IMAGE_EXT', substr($file, strrpos($file, '.') + 1));
             }
         }
@@ -156,6 +156,7 @@ class Stripe extends PaymentModule
             'stripe_remember_me' => ((int)Configuration::get('STRIPE_REMEMBER_ME') === 1) ? 'true' : 'false',
             'stripe_logo' => (file_exists(_PS_MODULE_DIR_.$this->name.'/views/img/'.$this->image_name.'.'.Configuration::get('STRIPE_IMAGE_EXT'))) ? $this->context->link->protocol_content.$this->image : '',
             'stripe_zip_code' => ((int)Configuration::get('STRIPE_VALIDATE_ZIP') === 1) ? 'true' : 'false',
+            'stripe_label' => Configuration::get('STRIPE_PANEL_LABEL'),
             'total_amount' => (int)($cart->getOrderTotal(true, CART::BOTH) * 100),
             'this_path_img' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/views/img/'
             ));
@@ -164,6 +165,7 @@ class Stripe extends PaymentModule
 
         return $this->display(__FILE__, 'payment.tpl');
     }
+
 
     /**
      * hookDisplayPaymentReturn
@@ -184,7 +186,8 @@ class Stripe extends PaymentModule
      * 
      * @return void
      */
-    private function deleteImages() {
+    private function deleteImages()
+    {
         $images = array(
             'stripe_logo.png',
             'stripe_logo.jpg',
@@ -221,6 +224,7 @@ class Stripe extends PaymentModule
             Configuration::updateValue('STRIPE_BILLING_ADDRESS', Tools::getValue('STRIPE_BILLING_ADDRESS'));
             Configuration::updateValue('STRIPE_REMEMBER_ME', Tools::getValue('STRIPE_REMEMBER_ME'));
             Configuration::updateValue('STRIPE_VALIDATE_ZIP', Tools::getValue('STRIPE_VALIDATE_ZIP'));
+            Configuration::updateValue('STRIPE_PANEL_LABEL', Tools::getValue('STRIPE_PANEL_LABEL'));
 
             if (isset($_FILES['STRIPE_IMAGE'])) {
                 Configuration::updateValue('STRIPE_IMAGE_EXT', substr($_FILES['STRIPE_IMAGE']['name'], strrpos($_FILES['STRIPE_IMAGE']['name'], '.') + 1));
@@ -246,7 +250,6 @@ class Stripe extends PaymentModule
             }
 
             if (isset($_FILES['STRIPE_IMAGE']) && isset($_FILES['STRIPE_IMAGE']['tmp_name']) && !empty($_FILES['STRIPE_IMAGE']['tmp_name'])) {
-
                 if (!in_array($_FILES['STRIPE_IMAGE']['type'], array('image/jpeg', 'image/png', 'image/gif'))) {
                     $this->post_errors[] = $this->l('Invalid file format please upload a jpg, png or gif file');
                 }
@@ -257,7 +260,7 @@ class Stripe extends PaymentModule
 
                 if (!move_uploaded_file($_FILES['STRIPE_IMAGE']['tmp_name'], _PS_MODULE_DIR_.$this->name.'/views/img/'.$this->image_name.'.'.Configuration::get('STRIPE_IMAGE_EXT'))) {
                     $this->post_errors[] = $this->l('File upload error');
-                }        
+                }
             }
         }
     }
@@ -306,7 +309,7 @@ class Stripe extends PaymentModule
                     'label' => $this->l('Image to display in checkout'),
                     'name' => 'STRIPE_IMAGE',
                     'desc' => $this->l('The recommended minimum size is 128x128px'),
-                    'thumb' => $this->context->link->protocol_content.$this->image
+                    'thumb' => (file_exists(_PS_MODULE_DIR_.$this->name.'/views/img/'.$this->image_name.'.'.Configuration::get('STRIPE_IMAGE_EXT'))) ? $this->context->link->protocol_content.$this->image : __PS_BASE_URI__.'/img/questionmark.png'
                 ),
                 array(
                     'type' => 'html',
@@ -328,6 +331,13 @@ class Stripe extends PaymentModule
                     'class' => 'fixed-width-xxl',
                     'name' => 'STRIPE_PUBLISHABLE_KEY',
                     'required' => true
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Panel label'),
+                    'desc' => $this->l('The label of the payment button in the Checkout form. If left blank "Pay" will be displayed.'),
+                    'class' => 'fixed-width-xxl',
+                    'name' => 'STRIPE_PANEL_LABEL',
                 ),
                 array(
                     'type' => 'switch',
@@ -503,6 +513,7 @@ class Stripe extends PaymentModule
             'STRIPE_BILLING_ADDRESS' => Tools::getValue('STRIPE_BILLING_ADDRESS', Configuration::get('STRIPE_BILLING_ADDRESS')),
             'STRIPE_REMEMBER_ME' => Tools::getValue('STRIPE_REMEMBER_ME', Configuration::get('STRIPE_REMEMBER_ME')),
             'STRIPE_VALIDATE_ZIP' => Tools::getValue('STRIPE_VALIDATE_ZIP', Configuration::get('STRIPE_VALIDATE_ZIP')),
+            'STRIPE_PANEL_LABEL' => Tools::getValue('STRIPE_PANEL_LABEL', Configuration::get('STRIPE_PANEL_LABEL')),
         );
     }
 }

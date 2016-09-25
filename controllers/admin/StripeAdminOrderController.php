@@ -99,20 +99,22 @@ class StripeAdminOrderController extends ModuleAdminController
 
     public function postProcess()
     {
-        try {
-            if (Tools::isSubmit('stripe_refund')) {
-                Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
+        if (Tools::isSubmit('stripe_refund')) {
+            try {
                 
-                Refund::create(
-                    array(
-                        'charge' => Tools::getValue('STRIPE_REFUND_ID')
-                    )
-                );
+                    Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
+                    
+                    Refund::create(
+                        array(
+                            'charge' => Tools::getValue('STRIPE_REFUND_ID')
+                        )
+                    );
 
-                $this->displayInformation('Successfully refunded transaction');
+                    $this->displayInformation('Successfully refunded transaction');
+                
+            } catch (Exception $e) {
+                $this->displayWarning('Credit failed with message : '.$e->getMessage(). 'and error code : '.$e->getCode());
             }
-        } catch (Exception $e) {
-            $this->displayWarning('Credit failed with message : '.$e->getMessage(). 'and error code : '.$e->getCode());
         }
     }
 
