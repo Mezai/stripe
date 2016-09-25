@@ -37,8 +37,9 @@
 	var $form = $('#stripe_charge');
 	var handler = StripeCheckout.configure({
 		key: "{$stripe_pk_key|escape:'htmlall':'UTF-8'}",
-		image: '',
+		image: "{$stripe_logo|escape:'htmlall':'UTF-8'}",
 		locale: 'auto',
+		zipCode: {$stripe_zip_code|escape:'htmlall':'UTF-8'},
 		token: function(token) {
 
 			$form.append($('<input type="hidden" name="stripeToken"/>').val(token.id));
@@ -50,9 +51,15 @@
 	$('#stripePayment').on('click', function(e) {
 		handler.open({
 			name: "{$shop_name|escape:'htmlall':'UTF-8'}",
+			email: "{$stripe_email|escape:'htmlall':'UTF-8'}",
+			shippingAddress: {$stripe_shipping|escape:'htmlall':'UTF-8'},
+			billingAddress: {$stripe_billing|escape:'htmlall':'UTF-8'},
+			alipay: {$stripe_alipay|escape:'htmlall':'UTF-8'},
+			bitcoin: {$stripe_bitcoin|escape:'htmlall':'UTF-8'},
 			currency: "{$stripe_currency|escape:'htmlall':'UTF-8'}",
 			description: "{$stripe_desc|escape:'htmlall':'UTF-8'}",
-			amount: "{$total_amount|intval|escape:'htmlall':'UTF-8'}"
+			allowRememberMe: {$stripe_remember_me|escape:'htmlall':'UTF-8'},
+			amount: {$total_amount|escape:'htmlall':'UTF-8'}
 		});
 		e.preventDefault();
 	});
