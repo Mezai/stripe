@@ -264,6 +264,7 @@ class stripe extends PaymentModule
                     $this->post_errors[] = $this->l('File upload error');
                 }
             }
+            Tools::redirectAdmin(AdminController::$currentIndex.'&configure='.$this->name.'&token='.Tools::getAdminTokenLite('AdminModules').'&conf=6');
         }
     }
 
