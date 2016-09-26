@@ -79,6 +79,10 @@ class StripeChargeModuleFrontController extends ModuleFrontController
             Db::getInstance()->insert('stripe_orders', array(
                 'id_stripe_order' => (int)$this->module->currentOrder,
                 'id_transaction' => pSQL($charge['id']),
+                'amount' => pSQL($charge['amount'] / 100),
+                'amount_refunded' => pSQL($charge['amount_refunded'] / 100),
+                'currency' => pSQL($charge['currency']),
+                'created_at' => pSQL(date('Y-m-d H:i:s', $charge['created'])),
             ));
 
             Tools::redirect(

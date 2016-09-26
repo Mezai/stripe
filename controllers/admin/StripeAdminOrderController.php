@@ -43,7 +43,11 @@ class StripeAdminOrderController extends ModuleAdminController
         $this->toolbar_title = $this->l('Stripe Orders');
         $this->fields_list = array(
             'id_stripe_order' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-            'id_transaction' => array('title' => $this->l('Transaction Id')),
+            'id_transaction' => array('title' => $this->l('Charge id')),
+            'amount' => array('title' => $this->l('Amount')),
+            'amount_refunded' => array('title' => $this->l('Amount refunded')),
+            'currency' => array('title' => $this->l('Currency')),
+            'created_at' => array('title' => $this->l('Created at')),
         );
         $this->fields_options = array(
             'refund' => array(
@@ -99,7 +103,7 @@ class StripeAdminOrderController extends ModuleAdminController
                 'icon' => 'icon-user',
                 'fields' => array(
                     'STRIPE_CAPTURE_ID' => array(
-                        'title' => $this->l('Charge id'),
+                        'title' => $this->l('Capture order'),
                         'desc' => $this->l('Fill in the charge id to capture payment'),
                         'validation' => 'isUnsignedInt',
                         'class' => 'fixed-width-xxl',
@@ -131,7 +135,7 @@ class StripeAdminOrderController extends ModuleAdminController
                     'name' => 'id_stripe_order',
                     'required' => true,
                     'lang' => false,
-                    'col' => 4,
+                    'col' => 2,
                     'hint' => $this->l('Stripe order id'),
                 ),
                 array(
@@ -139,8 +143,32 @@ class StripeAdminOrderController extends ModuleAdminController
                     'label' => $this->l('Transaction id'),
                     'name' => 'id_transaction',
                     'required' => false,
-                    'col' => 4,
+                    'col' => 2,
                     'hint' => $this->l('Stripe transaction id'),
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Amount'),
+                    'name' => 'amount',
+                    'required' => false,
+                    'col' => 2,
+                    'hint' => $this->l('Transaction amount'),
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Refunded amount'),
+                    'name' => 'amount_refunded',
+                    'required' => false,
+                    'col' => 2,
+                    'hint' => $this->l('Refunded amount'),
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Created'),
+                    'name' => 'created_at',
+                    'required' => false,
+                    'col' => 4,
+                    'hint' => $this->l('Transaction create date'),
                 ),
             ),
         );

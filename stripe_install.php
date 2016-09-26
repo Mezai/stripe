@@ -41,6 +41,10 @@ class StripeInstall extends Stripe
 			CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'stripe_orders` (
 				`id_stripe_order` int(10) unsigned NOT NULL,
 				`id_transaction` varchar(255) NOT NULL,
+                `amount` DECIMAL(10, 2) NOT NULL,
+                `amount_refunded` DECIMAL(10, 2) NOT NULL, 
+                `currency` varchar(255) NOT NULL,
+                `created_at` timestamp NULL, 
 				PRIMARY KEY(`id_stripe_order`)
 				) ENGINE ='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8')) {
             return false;
