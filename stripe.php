@@ -47,6 +47,7 @@ class stripe extends PaymentModule
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
         $this->tab = 'payments_gateways';
+        $this->module_key = '2b992ae52c5f3bf2ab0c77fa42c8de85';
     
 
         parent::__construct();
