@@ -27,6 +27,7 @@
 use Stripe\Stripe;
 use Stripe\Refund;
 use Stripe\Transfer;
+use Stripe\Charge;
 
 class StripeAdminOrderController extends ModuleAdminController
 {
@@ -92,6 +93,26 @@ class StripeAdminOrderController extends ModuleAdminController
                     'name' => 'stripe_transfer',
                 ),
             ),
+            'capture' => array(
+                'title' => $this->l('Capture'),
+                'description' => $this->l('This feature will capture a authorized payment'),
+                'icon' => 'icon-user',
+                'fields' => array(
+                    'STRIPE_CAPTURE_ID' => array(
+                        'title' => $this->l('Charge id'),
+                        'desc' => $this->l('Fill in the charge id to capture payment'),
+                        'validation' => 'isUnsignedInt',
+                        'class' => 'fixed-width-xxl',
+                        'type' => 'text',
+                    ),
+                ),
+                
+                'submit' => array(
+                    'title' => $this->l('Process capture'),
+                    'class' => 'button pull-right',
+                    'name' => 'stripe_capture',
+                ),
+            ),
         );
         parent::__construct();
         Stripe::setApiKey(Configuration::get('STRIPE_SECRET_KEY'));
@@ -151,6 +172,16 @@ class StripeAdminOrderController extends ModuleAdminController
                     );
             } catch (Exception $e) {
                 $this->displayWarning('Transfer failed with message : '.$e->getMessage(). 'and error code : '.$e->getCode());
+            }
+        }
+
+        if (Tools::isSubmit('stripe_capture')) {
+            try {
+                $charge = Charge::retrieve(trim(Tools::getValue('STRIPE_CAPTURE_ID')));
+                $charge->capture();
+                $this->displayInformation('Successfully captured transaction');
+            } catch (Exception $e) {
+                $this->displayWarning('Capture failed with message : '.$e->getMessage(). 'and error code : '.$e->getCode());
             }
         }
     }

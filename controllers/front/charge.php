@@ -56,7 +56,8 @@ class StripeChargeModuleFrontController extends ModuleFrontController
             $charge = Charge::create(array(
                 'customer' => $customer->id,
                 'amount'   => (int)($cart->getOrderTotal(true, CART::BOTH) * 100),
-                'currency' => Tools::strtolower($this->context->currency->iso_code)
+                'currency' => Tools::strtolower($this->context->currency->iso_code),
+                'capture' => ((int)Configuration::get('STRIPE_USE_CAPTURE') === 1) ? false : true
             ));
 
             $extra = array(

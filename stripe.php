@@ -225,6 +225,7 @@ class stripe extends PaymentModule
             Configuration::updateValue('STRIPE_REMEMBER_ME', Tools::getValue('STRIPE_REMEMBER_ME'));
             Configuration::updateValue('STRIPE_VALIDATE_ZIP', Tools::getValue('STRIPE_VALIDATE_ZIP'));
             Configuration::updateValue('STRIPE_PANEL_LABEL', Tools::getValue('STRIPE_PANEL_LABEL'));
+            Configuration::updateValue('STRIPE_USE_CAPTURE', Tools::getValue('STRIPE_USE_CAPTURE'));
 
             if (isset($_FILES['STRIPE_IMAGE'])) {
                 Configuration::updateValue('STRIPE_IMAGE_EXT', Tools::substr($_FILES['STRIPE_IMAGE']['name'], strrpos($_FILES['STRIPE_IMAGE']['name'], '.') + 1));
@@ -449,6 +450,24 @@ class stripe extends PaymentModule
                 ),
                 array(
                     'type' => 'switch',
+                    'label' => $this->l('Capture payments'),
+                    'desc' => $this->l('Select this if you first want to authorize payments, and capture them later'),
+                    'name' => 'STRIPE_USE_CAPTURE',
+                    'values' => array(
+                        array(
+                            'id' => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Yes')
+                            ),
+                        array(
+                            'id' => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('No')
+                        )
+                    ),
+                ),
+                array(
+                    'type' => 'switch',
                     'label' => $this->l('Test mode'),
                     'desc' => $this->l('Select test or live mode'),
                     'name' => 'STRIPE_MODE',
@@ -514,6 +533,7 @@ class stripe extends PaymentModule
             'STRIPE_REMEMBER_ME' => Tools::getValue('STRIPE_REMEMBER_ME', Configuration::get('STRIPE_REMEMBER_ME')),
             'STRIPE_VALIDATE_ZIP' => Tools::getValue('STRIPE_VALIDATE_ZIP', Configuration::get('STRIPE_VALIDATE_ZIP')),
             'STRIPE_PANEL_LABEL' => Tools::getValue('STRIPE_PANEL_LABEL', Configuration::get('STRIPE_PANEL_LABEL')),
+            'STRIPE_USE_CAPTURE' => Tools::getValue('STRIPE_USE_CAPTURE', Configuration::get('STRIPE_USE_CAPTURE')),
         );
     }
 }
